@@ -1,0 +1,2080 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>EquiSan · Gestión de Caballos</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root {
+      --primary: #234F2C;         /* Verde EquiSan */
+      --primary-soft: #eaeff0;
+      --accent: #f6b05b;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--primary);
+      color: #111111;
+    }
+
+    .container {
+      max-width: 1250px;
+      margin: 0 auto;
+      padding: 1.5rem;
+    }
+
+    header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+      color: white;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 1.7rem;
+      color: white;
+    }
+
+    header p {
+      margin: 0;
+      font-size: 0.9rem;
+      color: rgba(255,255,255,0.85);
+    }
+
+    .badge {
+      background: rgba(255,255,255,0.15);
+      border-radius: 999px;
+      padding: 0.35rem 0.8rem;
+      font-size: 0.8rem;
+      color: white;
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 0.9rem;
+      padding: 1.2rem;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.06);
+      margin-bottom: 1.5rem;
+    }
+
+    h2 {
+      margin-top: 0;
+      font-size: 1.1rem;
+      color: #111111;
+    }
+
+    form {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 0.8rem 1rem;
+      align-items: flex-end;
+    }
+
+    label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 0.2rem;
+      display: block;
+      color: #333333;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      padding: 0.45rem 0.5rem;
+      border-radius: 0.5rem;
+      border: 1px solid #ddd;
+      font-size: 0.9rem;
+      transition: border 0.15s, box-shadow 0.15s;
+      background: #ffffff;
+      color: #111111;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      outline: none;
+      border-color: #234F2C;
+      box-shadow: 0 0 0 2px rgba(35,79,44,0.18);
+    }
+
+    textarea {
+      min-height: 60px;
+      resize: vertical;
+    }
+
+    .full-width {
+      grid-column: 1 / -1;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 999px;
+      padding: 0.45rem 0.9rem;
+      font-size: 0.85rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.3rem;
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      background: #234F2C;
+      color: white;
+    }
+
+    .btn-secondary {
+      background: #e0e0e0;
+      color: #333;
+    }
+
+    .btn-danger {
+      background: #c0392b;
+      color: white;
+    }
+
+    .btn-sm {
+      padding: 0.25rem 0.6rem;
+      font-size: 0.75rem;
+    }
+
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.8rem;
+      margin-bottom: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .toolbar input,
+    .toolbar select {
+      max-width: 220px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+    }
+
+    th,
+    td {
+      padding: 0.45rem;
+      text-align: left;
+      border-bottom: 1px solid #eee;
+      vertical-align: top;
+    }
+
+    th {
+      background: #f3f3f3;
+      font-weight: 600;
+      font-size: 0.75rem;
+      color: #555;
+    }
+
+    tbody tr:nth-child(even) {
+      background: #fafafa;
+    }
+
+    .pill {
+      display: inline-block;
+      padding: 0.15rem 0.5rem;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      background: #f0f0f0;
+    }
+
+    .pill-cat {
+      background: #d6eaff;
+    }
+
+    .pill-pelaje {
+      background: #ffeaa7;
+    }
+
+    .pill-sexo {
+      background: #ffdce5;
+    }
+
+    .muted {
+      opacity: 0.7;
+      font-size: 0.75rem;
+    }
+
+    .link-like {
+      color: #234F2C;
+      text-decoration: underline;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+
+    .empty {
+      text-align: center;
+      padding: 1rem;
+      font-size: 0.9rem;
+      color: #777;
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.3rem;
+      margin-top: 0.2rem;
+    }
+
+    .tag {
+      background: #f0f0f0;
+      border-radius: 999px;
+      padding: 0.1rem 0.5rem;
+      font-size: 0.7rem;
+    }
+
+    .thumb {
+      width: 46px;
+      height: 46px;
+      object-fit: cover;
+      border-radius: 0.4rem;
+      border: 1px solid #ddd;
+    }
+
+    .field-inline {
+      display: flex;
+      gap: 0.4rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .trat-list {
+      border-radius: 0.5rem;
+      border: 1px solid #eee;
+      padding: 0.4rem;
+      max-height: 140px;
+      overflow-y: auto;
+      font-size: 0.78rem;
+      background: #fafafa;
+      margin-bottom: 0.4rem;
+    }
+
+    .trat-item {
+      display: flex;
+      justify-content: space-between;
+      gap: 0.4rem;
+      margin-bottom: 0.2rem;
+    }
+
+    .trat-main {
+      flex: 1;
+    }
+
+    .trat-label {
+      font-weight: 600;
+    }
+
+    .trat-form-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 0.4rem;
+      align-items: center;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.1rem 0.5rem;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      background: #f0f0f0;
+    }
+
+    .chip-soon {
+      background: #ffeaa7;
+    }
+
+    .chip-overdue {
+      background: #fab1a0;
+    }
+
+    .owner-chip {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      background: #e9f5ff;
+      padding: 0.1rem 0.5rem;
+      font-size: 0.75rem;
+    }
+
+    /* Modales */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.35);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .modal {
+      background: white;
+      border-radius: 0.8rem;
+      max-width: 600px;
+      width: 92%;
+      max-height: 85vh;
+      overflow-y: auto;
+      padding: 1rem 1.2rem;
+      box-shadow: 0 12px 25px rgba(0, 0, 0, 0.18);
+      font-size: 0.85rem;
+    }
+
+    .modal h3 {
+      margin-top: 0;
+      margin-bottom: 0.5rem;
+      color: #234F2C;
+      font-size: 1rem;
+    }
+
+    .detail-row {
+      margin-bottom: 0.4rem;
+    }
+
+    .detail-label {
+      font-weight: 600;
+      font-size: 0.8rem;
+    }
+
+    .detail-value {
+      font-size: 0.85rem;
+    }
+
+    @media (max-width: 950px) {
+      th:nth-child(5),
+      td:nth-child(5) {
+        display: none;
+      }
+    }
+
+    @media (max-width: 750px) {
+      th:nth-child(4),
+      td:nth-child(4) {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div style="display:flex; align-items:center; gap:12px;">
+        <img src="logo_equisan.png" style="height:60px;" alt="EquiSan Logo">
+        <div>
+          <h1>EquiSan · Gestión de Caballos</h1>
+          <p>Receptoras, potrillos, pacientes y training, todo en una sola vista.</p>
+        </div>
+      </div>
+      <div class="badge">Uso local · Tus datos quedan en este navegador</div>
+    </header>
+
+    <!-- FORM ANIMALES -->
+    <section class="card">
+      <h2>Ficha de animal</h2>
+      <form id="horse-form">
+        <input type="hidden" id="horse-id" />
+
+        <div>
+          <label for="categoria">Categoría</label>
+          <select id="categoria">
+            <option value="receptora">Receptora</option>
+            <option value="potrillo">Potrillo</option>
+            <option value="destete">Destete</option>
+            <option value="paciente">Paciente</option>
+            <option value="caballo">Caballo / training</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="nroReceptora">N° receptora</label>
+          <input id="nroReceptora" placeholder="Ej: R-23" />
+        </div>
+
+        <div id="nombre-wrapper">
+          <label for="nombre">Nombre / identificación</label>
+          <input id="nombre" placeholder="Ej: La Magia Negra" />
+        </div>
+
+        <div>
+          <label for="apodo">Apodo</label>
+          <input id="apodo" placeholder="Ej: Magia" />
+        </div>
+
+        <div>
+          <label for="pelaje">Pelaje</label>
+          <select id="pelaje">
+            <option value="">–</option>
+            <option value="Alazán">Alazán</option>
+            <option value="Gateado">Gateado</option>
+            <option value="Lobuno">Lobuno</option>
+            <option value="Oscuro">Oscuro</option>
+            <option value="Overo">Overo</option>
+            <option value="Pizazo">Pizazo</option>
+            <option value="Tobiano">Tobiano</option>
+            <option value="Zaino">Zaino</option>
+            <option value="Zaino colorado">Zaino colorado</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="sexo">Sexo</label>
+          <select id="sexo">
+            <option value="">–</option>
+            <option value="hembra">Hembra</option>
+            <option value="macho">Macho</option>
+            <option value="castrado">Castrado</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="propietarioId">Propietario</label>
+          <select id="propietarioId">
+            <option value="">Sin propietario</option>
+          </select>
+        </div>
+
+        <div class="full-width" id="receptora-select-wrapper">
+          <label for="receptoraId">Receptora (solo potrillos)</label>
+          <div class="field-inline">
+            <select id="receptoraId">
+              <option value="">Seleccionar receptora...</option>
+            </select>
+            <span class="muted">Al elegir una receptora se completan FPP, padre y madre del embrión.</span>
+          </div>
+        </div>
+
+        <div>
+          <label for="padre">Padre (sire)</label>
+          <input id="padre" placeholder="Nombre del padrillo" />
+        </div>
+
+        <div>
+          <label for="madre">Madre genética (dam)</label>
+          <input id="madre" placeholder="Nombre de la madre genética" />
+        </div>
+
+        <div id="fpp-wrapper">
+          <label for="fechaProbParto">Fecha probable de parto (FPP)</label>
+          <input id="fechaProbParto" type="date" />
+        </div>
+
+        <div id="nac-wrapper">
+          <label for="fechaNacimiento">Fecha de nacimiento</label>
+          <input id="fechaNacimiento" type="date" />
+        </div>
+
+        <div id="destete-wrapper">
+          <label for="fechaDestete">Fecha probable de destete (potrillos)</label>
+          <input id="fechaDestete" type="date" readonly />
+        </div>
+
+        <div id="igg-wrapper">
+          <label for="inmunoG">Inmuno G test (solo potrillos)</label>
+          <input id="inmunoG" placeholder="Resultado, fecha, kit..." />
+        </div>
+
+        <div id="paciente-ingreso-wrapper">
+          <label for="fechaIngreso">Ingreso de internación (pacientes)</label>
+          <input id="fechaIngreso" type="date" />
+        </div>
+
+        <div id="paciente-atencion-wrapper">
+          <label for="fechaAtencion">Fecha de atención en campo</label>
+          <input id="fechaAtencion" type="date" />
+        </div>
+
+        <div>
+          <label for="planSanitarioTag">Etiqueta plan sanitario</label>
+          <input id="planSanitarioTag" placeholder="Ej: Polo 2025, Endurance A..." />
+        </div>
+
+        <div class="full-width">
+          <label>Tratamientos / clínica</label>
+          <div class="trat-list" id="trat-list">
+            <div class="muted">Todavía no agregaste tratamientos.</div>
+          </div>
+          <div class="trat-form-row">
+            <div>
+              <label for="tratFecha">Fecha</label>
+              <input id="tratFecha" type="date" />
+            </div>
+            <div>
+              <label for="tratPatologia">Clínica / patología</label>
+              <input id="tratPatologia" placeholder="Ej: miositis, cólico..." />
+            </div>
+            <div>
+              <label for="tratDetalle">Tratamiento</label>
+              <input id="tratDetalle" placeholder="Droga, dosis, vía..." />
+            </div>
+            <div>
+              <button type="button" class="btn btn-secondary btn-sm" id="trat-add-btn">
+                ➕ Agregar
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="full-width">
+          <label for="observaciones">Observaciones</label>
+          <textarea
+            id="observaciones"
+            placeholder="Notas generales de parto, lactancia, carácter, rendimiento deportivo, etc."
+          ></textarea>
+        </div>
+
+        <div class="full-width">
+          <label>Fotos</label>
+          <div class="field-inline">
+            <div>
+              <span class="muted">Foto general</span><br />
+              <input type="file" id="foto" accept="image/*" />
+            </div>
+            <div>
+              <span class="muted">Dibujo identificatorio (potrillos)</span><br />
+              <input type="file" id="dibujo" accept="image/*" />
+            </div>
+            <div id="preview-fotos" class="field-inline"></div>
+          </div>
+          <div class="muted" style="margin-top:0.2rem;">
+            Tip: usá imágenes chicas, porque se guardan adentro del navegador y ocupan espacio.
+          </div>
+        </div>
+
+        <div class="full-width" style="display:flex; gap:0.6rem; flex-wrap:wrap;">
+          <button type="submit" class="btn btn-primary" id="save-btn">
+            💾 Guardar ficha
+          </button>
+          <button type="button" class="btn btn-secondary" id="reset-btn">
+            Limpiar formulario
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <!-- PROPIETARIOS -->
+    <section class="card">
+      <h2>Propietarios</h2>
+      <form id="owner-form">
+        <input type="hidden" id="owner-id" />
+
+        <div>
+          <label for="ownerNombre">Nombre / Empresa</label>
+          <input id="ownerNombre" placeholder="Ej: Haras La Esperanza / Juan Pérez" />
+        </div>
+        <div>
+          <label for="ownerContacto">Contacto</label>
+          <input id="ownerContacto" placeholder="Teléfono, mail..." />
+        </div>
+        <div>
+          <label for="ownerCuit">CUIT</label>
+          <input id="ownerCuit" placeholder="XX-XXXXXXXX-X" />
+        </div>
+        <div>
+          <label for="ownerRenspa">RENSPA</label>
+          <input id="ownerRenspa" placeholder="N° RENSPA" />
+        </div>
+        <div>
+          <label for="ownerEstablecimiento">Establecimiento / Haras</label>
+          <input id="ownerEstablecimiento" placeholder="Nombre del campo / haras" />
+        </div>
+        <div>
+          <label for="ownerPension">¿Pensión en casa?</label>
+          <select id="ownerPension">
+            <option value="">–</option>
+            <option value="si">Sí</option>
+            <option value="no">No</option>
+          </select>
+        </div>
+        <div class="full-width" style="display:flex; gap:0.6rem; flex-wrap:wrap;">
+          <button type="submit" class="btn btn-primary" id="owner-save-btn">
+            💾 Guardar propietario
+          </button>
+          <button type="button" class="btn btn-secondary" id="owner-reset-btn">
+            Limpiar
+          </button>
+        </div>
+      </form>
+
+      <div style="overflow-x:auto; margin-top:0.8rem;">
+        <table>
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Datos</th>
+              <th>Establecimiento</th>
+              <th>Animales asociados</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="owner-table-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- LISTADO ANIMALES -->
+    <section class="card">
+      <div class="toolbar">
+        <h2>Listado de animales</h2>
+        <div class="field-inline">
+          <select id="filterCategoria">
+            <option value="">Todas las categorías</option>
+            <option value="receptora">Receptoras</option>
+            <option value="potrillo">Potrillos</option>
+            <option value="destete">Destetes</option>
+            <option value="paciente">Pacientes</option>
+            <option value="caballo">Caballos / training</option>
+          </select>
+          <select id="filterPropietario">
+            <option value="">Todos los propietarios</option>
+          </select>
+          <input id="search" placeholder="Buscar por nombre, pelaje, padre..." />
+        </div>
+      </div>
+      <div class="muted" id="count-info"></div>
+      <div style="overflow-x:auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>Animal</th>
+              <th>Reproducción / fechas</th>
+              <th>Padres</th>
+              <th>Sanidad</th>
+              <th>Propietario</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="horse-table-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- PLAN SANITARIO -->
+    <section class="card">
+      <h2>Plan sanitario (reglas)</h2>
+      <p class="muted">
+        Definí reglas del tipo: “Receptora · base FPP · -30 días · Vacuna pre-parto”
+        o “Potrillo · base nacimiento · +90 días · 1° vacuna”.
+      </p>
+      <form id="plan-form" style="margin-bottom:0.8rem; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));">
+        <input type="hidden" id="plan-id" />
+        <div>
+          <label for="planNombre">Nombre del evento</label>
+          <input id="planNombre" placeholder="Ej: Vacuna pre-parto" />
+        </div>
+        <div>
+          <label for="planCategoria">Categoría</label>
+          <select id="planCategoria">
+            <option value="receptora">Receptora</option>
+            <option value="potrillo">Potrillo</option>
+            <option value="destete">Destete</option>
+            <option value="paciente">Paciente</option>
+            <option value="caballo">Caballo / training</option>
+          </select>
+        </div>
+        <div>
+          <label for="planBase">Fecha base</label>
+          <select id="planBase">
+            <option value="fechaProbParto">FPP</option>
+            <option value="fechaNacimiento">Nacimiento</option>
+            <option value="fechaIngreso">Ingreso internación</option>
+            <option value="fechaAtencion">Fecha atención campo</option>
+          </select>
+        </div>
+        <div>
+          <label for="planOffset">Días desde base</label>
+          <input id="planOffset" type="number" value="0" />
+        </div>
+        <div class="full-width">
+          <label for="planDescripcion">Descripción / detalle</label>
+          <input
+            id="planDescripcion"
+            placeholder="Droga, dosis, vía, laboratorio, etc."
+          />
+        </div>
+        <div class="full-width" style="display:flex; gap:0.6rem; flex-wrap:wrap;">
+          <button type="submit" class="btn btn-primary" id="plan-save-btn">
+            ➕ Agregar / actualizar regla
+          </button>
+          <button type="button" class="btn btn-secondary" id="plan-reset-btn">
+            Limpiar
+          </button>
+        </div>
+      </form>
+
+      <div style="overflow-x:auto; margin-top:0.8rem;">
+        <table>
+          <thead>
+            <tr>
+              <th>Evento</th>
+              <th>Categoría</th>
+              <th>Base</th>
+              <th>Días</th>
+              <th>Descripción</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="plan-table-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- RECORDATORIOS -->
+    <section class="card">
+      <div class="toolbar">
+        <h2>Recordatorios próximos</h2>
+        <span class="muted">Calculados a partir de fichas + plan sanitario</span>
+      </div>
+      <div style="overflow-x:auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Animal</th>
+              <th>Categoría</th>
+              <th>Evento</th>
+              <th>Plan</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody id="alert-table-body"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <!-- MODAL PEDIGRÍ -->
+  <div class="modal-backdrop" id="pedigree-backdrop">
+    <div class="modal">
+      <h3>Pedigrí</h3>
+      <div id="pedigree-content" class="muted"></div>
+      <div id="pedigree-links" style="margin-top:0.6rem; font-size:0.78rem;"></div>
+      <div style="margin-top:0.8rem; text-align:right;">
+        <button class="btn btn-secondary btn-sm" id="pedigree-close">
+          Cerrar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DETALLE ANIMAL -->
+  <div class="modal-backdrop" id="detail-backdrop">
+    <div class="modal">
+      <h3>Ficha del animal</h3>
+      <div id="detail-content"></div>
+      <div style="margin-top:0.8rem; display:flex; justify-content:flex-end; gap:0.4rem;">
+        <button class="btn btn-secondary btn-sm" id="detail-close">Cerrar</button>
+        <button class="btn btn-primary btn-sm" id="detail-edit">Editar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_HORSES = "equisan_fichas";
+    const STORAGE_PLAN = "equisan_plan";
+    const STORAGE_OWNERS = "equisan_propietarios_v1";
+
+    let currentTratamientos = [];
+    let currentFotoUrl = "";
+    let currentDibujoUrl = "";
+    let currentDetailId = null;
+
+    function loadHorses() {
+      try {
+        const raw = localStorage.getItem(STORAGE_HORSES);
+        return raw ? JSON.parse(raw) : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function saveHorses(data) {
+      localStorage.setItem(STORAGE_HORSES, JSON.stringify(data));
+    }
+
+    function loadPlan() {
+      try {
+        const raw = localStorage.getItem(STORAGE_PLAN);
+        return raw ? JSON.parse(raw) : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function savePlan(data) {
+      localStorage.setItem(STORAGE_PLAN, JSON.stringify(data));
+    }
+
+    function loadOwners() {
+      try {
+        const raw = localStorage.getItem(STORAGE_OWNERS);
+        return raw ? JSON.parse(raw) : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function saveOwners(data) {
+      localStorage.setItem(STORAGE_OWNERS, JSON.stringify(data));
+    }
+
+    function generateId(prefix) {
+      return prefix + "-" + Date.now() + "-" + Math.floor(Math.random() * 100000);
+    }
+
+    function formatDate(dateStr) {
+      if (!dateStr) return "";
+      const d = new Date(dateStr);
+      if (isNaN(d.getTime())) return "";
+      const dd = String(d.getDate()).padStart(2, "0");
+      const mm = String(d.getMonth() + 1).padStart(2, "0");
+      const yyyy = d.getFullYear();
+      return `${dd}/${mm}/${yyyy}`;
+    }
+
+    function calcDueDate(baseStr, offset) {
+      if (!baseStr) return null;
+      const d = new Date(baseStr);
+      if (isNaN(d.getTime())) return null;
+      d.setDate(d.getDate() + offset);
+      return d;
+    }
+
+    function calcDesteteFromNacimiento(nacStr) {
+      if (!nacStr) return "";
+      const d = new Date(nacStr);
+      if (isNaN(d.getTime())) return "";
+      d.setMonth(d.getMonth() + 5);
+      const yyyy = d.getFullYear();
+      const mm = String(d.getMonth() + 1).padStart(2, "0");
+      const dd = String(d.getDate()).padStart(2, "0");
+      return `${yyyy}-${mm}-${dd}`;
+    }
+
+    function daysBetween(d1, d2) {
+      const ONE_DAY = 1000 * 60 * 60 * 24;
+      const diff =
+        d1.setHours(0, 0, 0, 0) - d2.setHours(0, 0, 0, 0);
+      return Math.round(diff / ONE_DAY);
+    }
+
+    /* PROPIETARIOS (igual que antes) */
+
+    function renderOwners() {
+      const owners = loadOwners();
+      const horses = loadHorses();
+      const tbody = document.getElementById("owner-table-body");
+
+      if (owners.length === 0) {
+        tbody.innerHTML =
+          '<tr><td colspan="5" class="empty">Todavía no cargaste propietarios.</td></tr>';
+      } else {
+        tbody.innerHTML = "";
+        owners.forEach((o) => {
+          const count = horses.filter((h) => h.propietarioId === o.id).length;
+          const tr = document.createElement("tr");
+          const pensionText =
+            o.pension === "si"
+              ? "Pensión en casa"
+              : o.pension === "no"
+              ? "Sin pensión"
+              : "";
+          tr.innerHTML = `
+            <td>${o.nombre || "—"}</td>
+            <td>
+              ${o.contacto ? o.contacto + "<br>" : ""}
+              ${o.cuit ? "CUIT: " + o.cuit + "<br>" : ""}
+              ${o.renspa ? "RENSPA: " + o.renspa : ""}
+            </td>
+            <td>
+              ${o.establecimiento || "—"}
+              ${pensionText ? "<br><span class='muted'>" + pensionText + "</span>" : ""}
+            </td>
+            <td>${count}</td>
+          `;
+          const tdAcc = document.createElement("td");
+          const edit = document.createElement("button");
+          edit.className = "btn btn-sm btn-secondary";
+          edit.textContent = "Editar";
+          edit.onclick = () => loadOwnerIntoForm(o.id);
+          const del = document.createElement("button");
+          del.className = "btn btn-sm btn-danger";
+          del.textContent = "Borrar";
+          del.style.marginLeft = "0.3rem";
+          del.onclick = () => deleteOwner(o.id);
+          tdAcc.appendChild(edit);
+          tdAcc.appendChild(del);
+          tr.appendChild(tdAcc);
+          tbody.appendChild(tr);
+        });
+      }
+
+      const propSelect = document.getElementById("propietarioId");
+      const filterProp = document.getElementById("filterPropietario");
+      const currentValue = propSelect.value;
+      const currentFilter = filterProp.value;
+
+      propSelect.innerHTML = '<option value="">Sin propietario</option>';
+      filterProp.innerHTML =
+        '<option value="">Todos los propietarios</option>';
+
+      owners.forEach((o) => {
+        const op = document.createElement("option");
+        op.value = o.id;
+        op.textContent = o.nombre;
+        propSelect.appendChild(op);
+
+        const op2 = document.createElement("option");
+        op2.value = o.id;
+        op2.textContent = o.nombre;
+        filterProp.appendChild(op2);
+      });
+
+      if (currentValue) propSelect.value = currentValue;
+      if (currentFilter) filterProp.value = currentFilter;
+    }
+
+    function loadOwnerIntoForm(id) {
+      const owners = loadOwners();
+      const o = owners.find((x) => x.id === id);
+      if (!o) return;
+      document.getElementById("owner-id").value = o.id;
+      document.getElementById("ownerNombre").value = o.nombre || "";
+      document.getElementById("ownerContacto").value = o.contacto || "";
+      document.getElementById("ownerCuit").value = o.cuit || "";
+      document.getElementById("ownerRenspa").value = o.renspa || "";
+      document.getElementById("ownerEstablecimiento").value =
+        o.establecimiento || "";
+      document.getElementById("ownerPension").value = o.pension || "";
+      document.getElementById("owner-save-btn").textContent =
+        "✅ Actualizar propietario";
+    }
+
+    function resetOwnerForm() {
+      document.getElementById("owner-form").reset();
+      document.getElementById("owner-id").value = "";
+      document.getElementById("ownerPension").value = "";
+      document.getElementById("owner-save-btn").textContent =
+        "💾 Guardar propietario";
+    }
+
+    function deleteOwner(id) {
+      if (!confirm("¿Seguro que querés borrar este propietario?")) return;
+      let owners = loadOwners();
+      owners = owners.filter((o) => o.id !== id);
+      saveOwners(owners);
+      renderOwners();
+      renderTable();
+    }
+
+    /* TRATAMIENTOS */
+
+    function renderTratamientosList() {
+      const cont = document.getElementById("trat-list");
+      if (!currentTratamientos || currentTratamientos.length === 0) {
+        cont.innerHTML =
+          '<div class="muted">Todavía no agregaste tratamientos.</div>';
+        return;
+      }
+      cont.innerHTML = "";
+      currentTratamientos.forEach((t, idx) => {
+        const row = document.createElement("div");
+        row.className = "trat-item";
+        const main = document.createElement("div");
+        main.className = "trat-main";
+        const f = t.fecha ? formatDate(t.fecha) + " · " : "";
+        main.innerHTML =
+          `<span class="trat-label">${f}${t.patologia || ""}</span><br>` +
+          `<span class="muted">${t.detalle || ""}</span>`;
+        const btn = document.createElement("button");
+        btn.className = "btn btn-sm btn-danger";
+        btn.textContent = "✕";
+        btn.onclick = () => {
+          currentTratamientos.splice(idx, 1);
+          renderTratamientosList();
+        };
+        row.appendChild(main);
+        row.appendChild(btn);
+        cont.appendChild(row);
+      });
+    }
+
+    /* FOTOS */
+
+    function renderPreviewFotos() {
+      const cont = document.getElementById("preview-fotos");
+      cont.innerHTML = "";
+      if (currentFotoUrl) {
+        const img = document.createElement("img");
+        img.src = currentFotoUrl;
+        img.className = "thumb";
+        img.title = "Foto";
+        cont.appendChild(img);
+      }
+      if (currentDibujoUrl) {
+        const img2 = document.createElement("img");
+        img2.src = currentDibujoUrl;
+        img2.className = "thumb";
+        img2.title = "Dibujo potrillo";
+        cont.appendChild(img2);
+      }
+    }
+
+    function handleFileInput(fileInput, type) {
+      const file = fileInput.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        if (type === "foto") currentFotoUrl = e.target.result;
+        if (type === "dibujo") currentDibujoUrl = e.target.result;
+        renderPreviewFotos();
+      };
+      reader.readAsDataURL(file);
+    }
+
+    /* LISTADO ANIMALES */
+
+    function renderTable() {
+      const tbody = document.getElementById("horse-table-body");
+      const search = document.getElementById("search").value
+        .toLowerCase()
+        .trim();
+      const filterCat = document.getElementById("filterCategoria").value;
+      const filterProp = document.getElementById("filterPropietario").value;
+
+      const horses = loadHorses();
+      const owners = loadOwners();
+      const ownerMap = {};
+      owners.forEach((o) => (ownerMap[o.id] = o));
+
+      let filtered = horses;
+
+      if (filterCat) {
+        filtered = filtered.filter((h) => h.categoria === filterCat);
+      }
+      if (filterProp) {
+        filtered = filtered.filter((h) => h.propietarioId === filterProp);
+      }
+      if (search) {
+        filtered = filtered.filter((h) => {
+          const text =
+            (h.nombre || "") +
+            " " +
+            (h.apodo || "") +
+            " " +
+            (h.pelaje || "") +
+            " " +
+            (h.padre || "") +
+            " " +
+            (h.madre || "");
+          return text.toLowerCase().includes(search);
+        });
+      }
+
+      const countInfo = document.getElementById("count-info");
+      if (horses.length === 0) {
+        countInfo.textContent = "Todavía no cargaste fichas.";
+      } else if (filtered.length === horses.length) {
+        countInfo.textContent = `Total: ${horses.length} ficha(s).`;
+      } else {
+        countInfo.textContent = `Mostrando ${filtered.length} de ${horses.length} ficha(s).`;
+      }
+
+      if (filtered.length === 0) {
+        tbody.innerHTML =
+          '<tr><td colspan="6" class="empty">Sin resultados. Probá cambiar filtros o cargá la primera ficha 🐴</td></tr>';
+        renderAlerts();
+        return;
+      }
+
+      tbody.innerHTML = "";
+      filtered.forEach((h) => {
+        const tr = document.createElement("tr");
+
+        // Col 1: Animal
+        const tdAnimal = document.createElement("td");
+        const nombreDiv = document.createElement("div");
+        let displayName = h.nombre || "(Sin nombre)";
+        if (h.categoria === "receptora") {
+          displayName = h.nroReceptora || h.nombre || "(Sin nombre)";
+        }
+        nombreDiv.textContent = displayName;
+        nombreDiv.style.fontWeight = "600";
+
+        const subt = document.createElement("div");
+        subt.className = "muted";
+        if (h.categoria !== "receptora" && h.apodo) {
+          subt.textContent = `“${h.apodo}”`;
+        } else if (h.categoria === "receptora" && h.apodo) {
+          subt.textContent = `Apodo: “${h.apodo}”`;
+        }
+
+        const tagsDiv = document.createElement("div");
+        tagsDiv.className = "tags";
+        const cat = document.createElement("span");
+        cat.className = "pill pill-cat";
+        cat.textContent = h.categoria || "—";
+        tagsDiv.appendChild(cat);
+        if (h.pelaje) {
+          const pel = document.createElement("span");
+          pel.className = "pill pill-pelaje";
+          pel.textContent = h.pelaje;
+          tagsDiv.appendChild(pel);
+        }
+        if (h.sexo) {
+          const sx = document.createElement("span");
+          sx.className = "pill pill-sexo";
+          sx.textContent = h.sexo;
+          tagsDiv.appendChild(sx);
+        }
+        if (h.nroReceptora) {
+          const rec = document.createElement("span");
+          rec.className = "tag";
+          rec.textContent = "N° " + h.nroReceptora;
+          tagsDiv.appendChild(rec);
+        }
+        if (h.planSanitarioTag) {
+          const pl = document.createElement("span");
+          pl.className = "tag";
+          pl.textContent = h.planSanitarioTag;
+          tagsDiv.appendChild(pl);
+        }
+
+        if (h.fotoUrl || h.dibujoUrl) {
+          const imgBox = document.createElement("div");
+          imgBox.style.marginTop = "0.3rem";
+          if (h.fotoUrl) {
+            const img = document.createElement("img");
+            img.src = h.fotoUrl;
+            img.className = "thumb";
+            imgBox.appendChild(img);
+          }
+          if (h.dibujoUrl) {
+            const img2 = document.createElement("img");
+            img2.src = h.dibujoUrl;
+            img2.className = "thumb";
+            img2.style.marginLeft = "0.2rem";
+            imgBox.appendChild(img2);
+          }
+          tdAnimal.appendChild(imgBox);
+        }
+
+        tdAnimal.appendChild(nombreDiv);
+        if (subt.textContent) tdAnimal.appendChild(subt);
+        if (tagsDiv.children.length) tdAnimal.appendChild(tagsDiv);
+
+        // Col 2: Reproducción / fechas
+        const tdRepro = document.createElement("td");
+        const parts = [];
+        if (h.fechaProbParto && (h.categoria === "receptora" || h.categoria === "potrillo")) {
+          parts.push("FPP: " + formatDate(h.fechaProbParto));
+        }
+        if (h.fechaNacimiento) {
+          if (h.categoria === "receptora" && h.fechaNacimientoPotrillo) {
+            parts.push("Nac. potro: " + formatDate(h.fechaNacimientoPotrillo));
+          } else {
+            parts.push("Nac.: " + formatDate(h.fechaNacimiento));
+          }
+        }
+        if (h.fechaDestete && h.categoria === "potrillo") {
+          parts.push("Destete: " + formatDate(h.fechaDestete));
+        }
+        if (h.categoria === "paciente" && h.fechaIngreso) {
+          parts.push("Ingreso: " + formatDate(h.fechaIngreso));
+        }
+        if (h.categoria === "paciente" && h.fechaAtencion) {
+          parts.push("Atención: " + formatDate(h.fechaAtencion));
+        }
+        tdRepro.innerHTML = parts.join("<br>") || "—";
+
+        // Col 3: Padres
+        const tdPadres = document.createElement("td");
+        if (h.padre) {
+          const p = document.createElement("div");
+          const link = document.createElement("span");
+          link.textContent = "Padre: " + h.padre;
+          link.className = "link-like";
+          link.onclick = () => showPedigree(h.padre);
+          p.appendChild(link);
+          tdPadres.appendChild(p);
+        }
+        if (h.madre) {
+          const m = document.createElement("div");
+          const link2 = document.createElement("span");
+          link2.textContent = "Madre: " + h.madre;
+          link2.className = "link-like";
+          link2.onclick = () => showPedigree(h.madre);
+          m.appendChild(link2);
+          tdPadres.appendChild(m);
+        }
+        if (!h.padre && !h.madre) {
+          tdPadres.textContent = "—";
+        }
+
+        // Col 4: Sanidad
+        const tdSan = document.createElement("td");
+        if (h.categoria === "potrillo" && h.inmunoG) {
+          const ig = document.createElement("div");
+          ig.textContent = "IgG: " + h.inmunoG;
+          tdSan.appendChild(ig);
+        }
+        if (h.tratamientos && h.tratamientos.length > 0) {
+          const t0 = h.tratamientos[h.tratamientos.length - 1];
+          const f = t0.fecha ? formatDate(t0.fecha) + " · " : "";
+          const div = document.createElement("div");
+          div.innerHTML =
+            `<span class="trat-label">${f}${t0.patologia || ""}</span><br>` +
+            `<span class="muted">${t0.detalle || ""}</span>`;
+          tdSan.appendChild(div);
+        }
+        if (!tdSan.innerHTML) tdSan.textContent = "—";
+
+        // Col 5: Propietario
+        const tdProp = document.createElement("td");
+        const owner = h.propietarioId ? ownerMap[h.propietarioId] : null;
+        if (owner) {
+          tdProp.innerHTML =
+            `<div class="owner-chip">${owner.nombre}</div>` +
+            (owner.establecimiento
+              ? `<br><span class="muted">${owner.establecimiento}</span>`
+              : "");
+        } else {
+          tdProp.textContent = "—";
+        }
+
+        // Col 6: Acciones
+        const tdAcciones = document.createElement("td");
+        const viewBtn = document.createElement("button");
+        viewBtn.className = "btn btn-sm btn-secondary";
+        viewBtn.textContent = "Ver ficha";
+        viewBtn.onclick = () => openDetailModal(h.id);
+
+        const editBtn = document.createElement("button");
+        editBtn.className = "btn btn-sm btn-secondary";
+        editBtn.textContent = "Editar";
+        editBtn.style.marginLeft = "0.3rem";
+        editBtn.onclick = () => loadIntoForm(h.id);
+
+        const delBtn = document.createElement("button");
+        delBtn.className = "btn btn-sm btn-danger";
+        delBtn.textContent = "Borrar";
+        delBtn.style.marginLeft = "0.3rem";
+        delBtn.onclick = () => deleteHorse(h.id);
+
+        tdAcciones.appendChild(viewBtn);
+        tdAcciones.appendChild(editBtn);
+        tdAcciones.appendChild(delBtn);
+
+        tr.appendChild(tdAnimal);
+        tr.appendChild(tdRepro);
+        tr.appendChild(tdPadres);
+        tr.appendChild(tdSan);
+        tr.appendChild(tdProp);
+        tr.appendChild(tdAcciones);
+
+        tbody.appendChild(tr);
+      });
+
+      renderAlerts();
+      populateReceptoraSelect();
+    }
+
+    function loadIntoForm(id) {
+      const horses = loadHorses();
+      const h = horses.find((x) => x.id === id);
+      if (!h) return;
+
+      document.getElementById("horse-id").value = h.id;
+      document.getElementById("categoria").value = h.categoria || "receptora";
+      document.getElementById("nroReceptora").value = h.nroReceptora || "";
+      document.getElementById("nombre").value = h.nombre || "";
+      document.getElementById("apodo").value = h.apodo || "";
+      document.getElementById("pelaje").value = h.pelaje || "";
+      document.getElementById("sexo").value = h.sexo || "";
+      document.getElementById("propietarioId").value = h.propietarioId || "";
+      document.getElementById("receptoraId").value = h.receptoraId || "";
+      document.getElementById("padre").value = h.padre || "";
+      document.getElementById("madre").value = h.madre || "";
+      document.getElementById("fechaProbParto").value = h.fechaProbParto || "";
+      document.getElementById("fechaNacimiento").value =
+        h.fechaNacimiento || "";
+      document.getElementById("fechaDestete").value =
+        h.fechaDestete || "";
+      document.getElementById("inmunoG").value = h.inmunoG || "";
+      document.getElementById("planSanitarioTag").value =
+        h.planSanitarioTag || "";
+      document.getElementById("fechaIngreso").value = h.fechaIngreso || "";
+      document.getElementById("fechaAtencion").value = h.fechaAtencion || "";
+      document.getElementById("observaciones").value = h.observaciones || "";
+
+      currentTratamientos = h.tratamientos || [];
+      currentFotoUrl = h.fotoUrl || "";
+      currentDibujoUrl = h.dibujoUrl || "";
+
+      renderTratamientosList();
+      renderPreviewFotos();
+      populateReceptoraSelect(h.receptoraId || "");
+      applyCategoriaVisibility();
+
+      document.getElementById("save-btn").textContent = "✅ Actualizar ficha";
+    }
+
+    function deleteHorse(id) {
+      if (!confirm("¿Seguro que querés borrar esta ficha?")) return;
+      let horses = loadHorses();
+      horses = horses.filter((h) => h.id !== id);
+      saveHorses(horses);
+      renderTable();
+    }
+
+    function resetForm() {
+      document.getElementById("horse-form").reset();
+      document.getElementById("horse-id").value = "";
+      document.getElementById("categoria").value = "receptora";
+      document.getElementById("sexo").value = "";
+      document.getElementById("propietarioId").value = "";
+      document.getElementById("fechaDestete").value = "";
+      currentTratamientos = [];
+      currentFotoUrl = "";
+      currentDibujoUrl = "";
+      document.getElementById("foto").value = "";
+      document.getElementById("dibujo").value = "";
+      renderTratamientosList();
+      renderPreviewFotos();
+      populateReceptoraSelect();
+      applyCategoriaVisibility();
+      document.getElementById("save-btn").textContent = "💾 Guardar ficha";
+    }
+
+    /* CATEGORÍAS */
+
+    function applyCategoriaVisibility() {
+      const cat = document.getElementById("categoria").value;
+      const fppWrap = document.getElementById("fpp-wrapper");
+      const nacWrap = document.getElementById("nac-wrapper");
+      const iggWrap = document.getElementById("igg-wrapper");
+      const recSelWrap = document.getElementById("receptora-select-wrapper");
+      const ingWrap = document.getElementById("paciente-ingreso-wrapper");
+      const atWrap = document.getElementById("paciente-atencion-wrapper");
+      const nombreWrap = document.getElementById("nombre-wrapper");
+      const desteteWrap = document.getElementById("destete-wrapper");
+
+      fppWrap.style.display =
+        cat === "receptora" || cat === "potrillo" ? "block" : "none";
+
+      nacWrap.style.display = "block"; // nacimiento casi siempre útil
+
+      iggWrap.style.display = cat === "potrillo" ? "block" : "none";
+      recSelWrap.style.display = cat === "potrillo" ? "block" : "none";
+      desteteWrap.style.display = cat === "potrillo" ? "block" : "none";
+
+      ingWrap.style.display = cat === "paciente" ? "block" : "none";
+      atWrap.style.display = cat === "paciente" ? "block" : "none";
+
+      // Para receptoras: no mostrar campo nombre, usan el número.
+      if (cat === "receptora") {
+        nombreWrap.style.display = "none";
+      } else {
+        nombreWrap.style.display = "block";
+      }
+    }
+
+    function populateReceptoraSelect(selectedId) {
+      const sel = document.getElementById("receptoraId");
+      const current = sel.value;
+      const horses = loadHorses().filter((h) => h.categoria === "receptora");
+      sel.innerHTML =
+        '<option value="">Seleccionar receptora...</option>';
+      horses.forEach((r) => {
+        const op = document.createElement("option");
+        op.value = r.id;
+        op.textContent =
+          (r.nroReceptora ? r.nroReceptora + " · " : "") + (r.apodo || r.nombre || "");
+        sel.appendChild(op);
+      });
+      if (selectedId) sel.value = selectedId;
+      else if (current) sel.value = current;
+    }
+
+    function applyReceptoraToFoal(receptoraId) {
+      if (!receptoraId) return;
+      const horses = loadHorses();
+      const rec = horses.find((h) => h.id === receptoraId);
+      if (!rec) return;
+      document.getElementById("receptoraId").value = receptoraId;
+      if (rec.nroReceptora)
+        document.getElementById("nroReceptora").value = rec.nroReceptora;
+      if (rec.fechaProbParto)
+        document.getElementById("fechaProbParto").value = rec.fechaProbParto;
+      if (rec.padre)
+        document.getElementById("padre").value = rec.padre;
+      if (rec.madre)
+        document.getElementById("madre").value = rec.madre;
+    }
+
+    /* PEDIGRÍ */
+
+    function buildPedigreeTree(horses, horse, depth = 0, maxDepth = 3) {
+      if (!horse || depth > maxDepth) return "";
+      const indent = "&nbsp;".repeat(depth * 4);
+      let html = `<div class="detail-row"><span class="detail-label">${indent}${
+        depth === 0
+          ? "Animal"
+          : depth === 1
+          ? "Padres"
+          : "Abuelos / bisabuelos"
+      }:</span> <span class="detail-value">${horse.nombre || "(sin nombre)"}${
+        horse.apodo ? ' – “' + horse.apodo + '”' : ""
+      }</span></div>`;
+
+      if (depth === maxDepth) return html;
+
+      if (horse.padre) {
+        const father = horses.find((h) => h.nombre === horse.padre);
+        html += `<div class="detail-row"><span class="detail-label">${indent}→ Padre:</span> <span class="detail-value">${horse.padre}</span></div>`;
+        if (father) {
+          html += buildPedigreeTree(horses, father, depth + 1, maxDepth);
+        }
+      }
+      if (horse.madre) {
+        const mother = horses.find((h) => h.nombre === horse.madre);
+        html += `<div class="detail-row"><span class="detail-label">${indent}→ Madre:</span> <span class="detail-value">${horse.madre}</span></div>`;
+        if (mother) {
+          html += buildPedigreeTree(horses, mother, depth + 1, maxDepth);
+        }
+      }
+      return html;
+    }
+
+    function showPedigree(nombreBuscado) {
+      const horses = loadHorses();
+      const base = horses.find((h) => h.nombre === nombreBuscado);
+      const content = document.getElementById("pedigree-content");
+      const links = document.getElementById("pedigree-links");
+
+      if (!base) {
+        content.innerHTML =
+          "No encontré una ficha con ese nombre cargada todavía.<br>Si querés ver el pedigrí extendido, cargá también a ese caballo y sus padres.";
+      } else {
+        content.innerHTML = buildPedigreeTree(horses, base, 0, 3);
+      }
+
+      const q = encodeURIComponent(nombreBuscado);
+      const poloUrl =
+        "https://www.google.com/search?q=" +
+        encodeURIComponent("site:criapoloargentino.com.ar " + nombreBuscado);
+      const studUrl =
+        "https://www.google.com/search?q=" +
+        encodeURIComponent("site:studbook.org.ar " + nombreBuscado);
+
+      links.innerHTML =
+        `<div>Buscar este nombre en:</div>
+         <div>
+           <a href="${poloUrl}" target="_blank" rel="noopener">Asoc. Arg. Criadores Caballos de Polo</a><br>
+           <a href="${studUrl}" target="_blank" rel="noopener">Stud Book Argentino</a>
+         </div>`;
+
+      document.getElementById("pedigree-backdrop").style.display = "flex";
+    }
+
+    /* DETALLE ANIMAL (solo lectura) */
+
+    function openDetailModal(id) {
+      const horses = loadHorses();
+      const owners = loadOwners();
+      const ownerMap = {};
+      owners.forEach(o => ownerMap[o.id] = o);
+
+      const h = horses.find(x => x.id === id);
+      if (!h) return;
+      currentDetailId = id;
+
+      const div = document.getElementById("detail-content");
+      const owner = h.propietarioId ? ownerMap[h.propietarioId] : null;
+
+      const partes = [];
+
+      partes.push(`<div class="detail-row"><span class="detail-label">Categoría:</span> <span class="detail-value">${h.categoria || "—"}</span></div>`);
+
+      if (h.categoria === "receptora") {
+        partes.push(`<div class="detail-row"><span class="detail-label">N° receptora:</span> <span class="detail-value">${h.nroReceptora || "—"}</span></div>`);
+        if (h.apodo) partes.push(`<div class="detail-row"><span class="detail-label">Apodo:</span> <span class="detail-value">“${h.apodo}”</span></div>`);
+      } else {
+        partes.push(`<div class="detail-row"><span class="detail-label">Nombre:</span> <span class="detail-value">${h.nombre || "—"}</span></div>`);
+        if (h.apodo) partes.push(`<div class="detail-row"><span class="detail-label">Apodo:</span> <span class="detail-value">“${h.apodo}”</span></div>`);
+      }
+
+      if (h.pelaje) partes.push(`<div class="detail-row"><span class="detail-label">Pelaje:</span> <span class="detail-value">${h.pelaje}</span></div>`);
+      if (h.sexo) partes.push(`<div class="detail-row"><span class="detail-label">Sexo:</span> <span class="detail-value">${h.sexo}</span></div>`);
+
+      if (owner) {
+        partes.push(`<div class="detail-row"><span class="detail-label">Propietario:</span> <span class="detail-value">${owner.nombre}${owner.establecimiento ? " – " + owner.establecimiento : ""}</span></div>`);
+      }
+
+      if (h.categoria === "receptora" || h.categoria === "potrillo") {
+        if (h.fechaProbParto) partes.push(`<div class="detail-row"><span class="detail-label">FPP:</span> <span class="detail-value">${formatDate(h.fechaProbParto)}</span></div>`);
+      }
+
+      if (h.fechaNacimiento) {
+        if (h.categoria === "receptora" && h.fechaNacimientoPotrillo) {
+          partes.push(`<div class="detail-row"><span class="detail-label">Nacimiento potrillo:</span> <span class="detail-value">${formatDate(h.fechaNacimientoPotrillo)}</span></div>`);
+        } else {
+          partes.push(`<div class="detail-row"><span class="detail-label">Nacimiento:</span> <span class="detail-value">${formatDate(h.fechaNacimiento)}</span></div>`);
+        }
+      }
+
+      if (h.categoria === "potrillo" && h.fechaDestete) {
+        partes.push(`<div class="detail-row"><span class="detail-label">Destete:</span> <span class="detail-value">${formatDate(h.fechaDestete)}</span></div>`);
+      }
+
+      if (h.categoria === "paciente" && h.fechaIngreso) {
+        partes.push(`<div class="detail-row"><span class="detail-label">Ingreso internación:</span> <span class="detail-value">${formatDate(h.fechaIngreso)}</span></div>`);
+      }
+      if (h.categoria === "paciente" && h.fechaAtencion) {
+        partes.push(`<div class="detail-row"><span class="detail-label">Atención campo:</span> <span class="detail-value">${formatDate(h.fechaAtencion)}</span></div>`);
+      }
+
+      if (h.padre || h.madre) {
+        partes.push(`<hr>`);
+        if (h.padre) partes.push(`<div class="detail-row"><span class="detail-label">Padre:</span> <span class="detail-value">${h.padre}</span></div>`);
+        if (h.madre) partes.push(`<div class="detail-row"><span class="detail-label">Madre:</span> <span class="detail-value">${h.madre}</span></div>`);
+      }
+
+      if (h.categoria === "potrillo" && h.inmunoG) {
+        partes.push(`<hr>`);
+        partes.push(`<div class="detail-row"><span class="detail-label">Inmuno G test:</span> <span class="detail-value">${h.inmunoG}</span></div>`);
+      }
+
+      if (h.tratamientos && h.tratamientos.length) {
+        partes.push(`<hr>`);
+        partes.push(`<div class="detail-row"><span class="detail-label">Tratamientos:</span></div>`);
+        h.tratamientos.forEach(t => {
+          const f = t.fecha ? formatDate(t.fecha) + " · " : "";
+          partes.push(`<div class="detail-row"><span class="detail-value">${f}${t.patologia || ""} – ${t.detalle || ""}</span></div>`);
+        });
+      }
+
+      if (h.observaciones) {
+        partes.push(`<hr>`);
+        partes.push(`<div class="detail-row"><span class="detail-label">Observaciones:</span><br><span class="detail-value">${h.observaciones.replace(/\n/g,"<br>")}</span></div>`);
+      }
+
+      div.innerHTML = partes.join("");
+      document.getElementById("detail-backdrop").style.display = "flex";
+    }
+
+    /* PLAN + ALERTAS (igual lógica que antes) */
+
+    function renderPlanTable() {
+      const tbody = document.getElementById("plan-table-body");
+      const plan = loadPlan();
+      if (plan.length === 0) {
+        tbody.innerHTML =
+          '<tr><td colspan="6" class="empty">Sin reglas cargadas. Empezá por definir 1–2 eventos del plan.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = "";
+      plan.forEach((p) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${p.nombre || "—"}</td>
+          <td>${p.categoria}</td>
+          <td>${
+            p.base === "fechaProbParto"
+              ? "FPP"
+              : p.base === "fechaNacimiento"
+              ? "Nacimiento"
+              : p.base === "fechaIngreso"
+              ? "Ingreso internación"
+              : "Atención campo"
+          }</td>
+          <td>${p.offset >= 0 ? "+" + p.offset : p.offset}</td>
+          <td>${p.descripcion || "—"}</td>
+        `;
+        const tdAcc = document.createElement("td");
+        const edit = document.createElement("button");
+        edit.className = "btn btn-sm btn-secondary";
+        edit.textContent = "Editar";
+        edit.onclick = () => loadPlanIntoForm(p.id);
+        const del = document.createElement("button");
+        del.className = "btn btn-sm btn-danger";
+        del.textContent = "Borrar";
+        del.style.marginLeft = "0.3rem";
+        del.onclick = () => deletePlan(p.id);
+        tdAcc.appendChild(edit);
+        tdAcc.appendChild(del);
+        tr.appendChild(tdAcc);
+        tbody.appendChild(tr);
+      });
+      renderAlerts();
+    }
+
+    function loadPlanIntoForm(id) {
+      const plan = loadPlan();
+      const p = plan.find((x) => x.id === id);
+      if (!p) return;
+      document.getElementById("plan-id").value = p.id;
+      document.getElementById("planNombre").value = p.nombre || "";
+      document.getElementById("planCategoria").value =
+        p.categoria || "receptora";
+      document.getElementById("planBase").value = p.base || "fechaProbParto";
+      document.getElementById("planOffset").value = p.offset || 0;
+      document.getElementById("planDescripcion").value =
+        p.descripcion || "";
+      document.getElementById("plan-save-btn").textContent =
+        "✅ Actualizar regla";
+    }
+
+    function resetPlanForm() {
+      document.getElementById("plan-form").reset();
+      document.getElementById("plan-id").value = "";
+      document.getElementById("planCategoria").value = "receptora";
+      document.getElementById("planBase").value = "fechaProbParto";
+      document.getElementById("planOffset").value = 0;
+      document.getElementById("plan-save-btn").textContent =
+        "➕ Agregar / actualizar regla";
+    }
+
+    function deletePlan(id) {
+      if (!confirm("¿Seguro que querés borrar esta regla del plan?")) return;
+      let plan = loadPlan();
+      plan = plan.filter((p) => p.id !== id);
+      savePlan(plan);
+      renderPlanTable();
+    }
+
+    function renderAlerts() {
+      const tbody = document.getElementById("alert-table-body");
+      const horses = loadHorses();
+      const plan = loadPlan();
+      const today = new Date();
+      const events = [];
+
+      horses.forEach((h) => {
+        plan.forEach((p) => {
+          if (p.categoria !== h.categoria) return;
+          let baseDateStr = "";
+          if (p.base === "fechaProbParto") baseDateStr = h.fechaProbParto;
+          else if (p.base === "fechaNacimiento") baseDateStr = h.fechaNacimiento;
+          else if (p.base === "fechaIngreso") baseDateStr = h.fechaIngreso;
+          else if (p.base === "fechaAtencion") baseDateStr = h.fechaAtencion;
+
+          const due = calcDueDate(baseDateStr, Number(p.offset || 0));
+          if (!due) return;
+          const daysTo = daysBetween(new Date(due), new Date(today));
+          if (daysTo >= -30 && daysTo <= 120) {
+            events.push({
+              fecha: due,
+              daysTo,
+              animal: h.nombre || h.nroReceptora || "(sin nombre)",
+              categoria: h.categoria,
+              evento: p.nombre,
+              planTag: h.planSanitarioTag || "",
+            });
+          }
+        });
+      });
+
+      if (events.length === 0) {
+        tbody.innerHTML =
+          '<tr><td colspan="6" class="empty">No hay eventos dentro de los últimos 30 días ni de los próximos 120 días.</td></tr>';
+        return;
+      }
+
+      events.sort((a, b) => a.fecha - b.fecha);
+
+      tbody.innerHTML = "";
+      events.forEach((ev) => {
+        const tr = document.createElement("tr");
+        const fecha = formatDate(ev.fecha.toISOString().slice(0, 10));
+        let estadoText = "";
+        let chipClass = "chip";
+        if (ev.daysTo < 0) {
+          estadoText = `Vencido hace ${Math.abs(ev.daysTo)} día(s)`;
+          chipClass += " chip-overdue";
+        } else if (ev.daysTo === 0) {
+          estadoText = "Hoy";
+          chipClass += " chip-soon";
+        } else if (ev.daysTo <= 7) {
+          estadoText = `En ${ev.daysTo} día(s)`;
+          chipClass += " chip-soon";
+        } else {
+          estadoText = `En ${ev.daysTo} día(s)`;
+        }
+
+        tr.innerHTML = `
+          <td>${fecha}</td>
+          <td>${ev.animal}</td>
+          <td>${ev.categoria}</td>
+          <td>${ev.evento || "—"}</td>
+          <td>${ev.planTag || "—"}</td>
+          <td><span class="${chipClass}">${estadoText}</span></td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    /* EVENTOS DOM */
+
+    document
+      .getElementById("horse-form")
+      .addEventListener("submit", function (e) {
+        e.preventDefault();
+        const idField = document.getElementById("horse-id");
+        const categoria = document.getElementById("categoria").value;
+        const nroReceptora =
+          document.getElementById("nroReceptora").value.trim();
+        let nombre = document.getElementById("nombre").value.trim();
+        const apodo = document.getElementById("apodo").value.trim();
+        const pelaje = document.getElementById("pelaje").value;
+        const sexo = document.getElementById("sexo").value;
+        const propietarioId =
+          document.getElementById("propietarioId").value || "";
+        const receptoraId =
+          document.getElementById("receptoraId").value || "";
+        const padre = document.getElementById("padre").value.trim();
+        const madre = document.getElementById("madre").value.trim();
+        const fechaProbParto =
+          document.getElementById("fechaProbParto").value || "";
+        const fechaNacimiento =
+          document.getElementById("fechaNacimiento").value || "";
+        const fechaDestete =
+          document.getElementById("fechaDestete").value || "";
+        const inmunoG = document.getElementById("inmunoG").value.trim();
+        const planSanitarioTag = document
+          .getElementById("planSanitarioTag")
+          .value.trim();
+        const fechaIngreso =
+          document.getElementById("fechaIngreso").value || "";
+        const fechaAtencion =
+          document.getElementById("fechaAtencion").value || "";
+        const observaciones = document
+          .getElementById("observaciones")
+          .value.trim();
+
+        if (categoria !== "receptora" && !nombre) {
+          alert("El campo nombre / identificación es obligatorio (excepto en receptoras).");
+          return;
+        }
+
+        if (categoria === "receptora") {
+          nombre = nroReceptora || nombre;
+        }
+
+        let finalInmunoG = inmunoG;
+        if (categoria !== "potrillo") finalInmunoG = "";
+
+        let horses = loadHorses();
+
+        const fichaBase = {
+          categoria,
+          nroReceptora,
+          nombre,
+          apodo,
+          pelaje,
+          sexo,
+          propietarioId,
+          receptoraId,
+          padre,
+          madre,
+          fechaProbParto:
+            categoria === "receptora" || categoria === "potrillo"
+              ? fechaProbParto
+              : "",
+          fechaNacimiento,
+          fechaDestete: categoria === "potrillo" ? fechaDestete : "",
+          inmunoG: categoria === "potrillo" ? finalInmunoG : "",
+          planSanitarioTag,
+          fechaIngreso: categoria === "paciente" ? fechaIngreso : "",
+          fechaAtencion: categoria === "paciente" ? fechaAtencion : "",
+          tratamientos: currentTratamientos.slice(),
+          fotoUrl: currentFotoUrl || "",
+          dibujoUrl: categoria === "potrillo" ? currentDibujoUrl || "" : "",
+          observaciones,
+        };
+
+        if (idField.value) {
+          const idx = horses.findIndex((h) => h.id === idField.value);
+          if (idx !== -1) {
+            horses[idx] = { ...horses[idx], ...fichaBase, id: horses[idx].id };
+          }
+        } else {
+          fichaBase.id = generateId("ficha");
+          horses.push(fichaBase);
+        }
+
+        // Si es potrillo: actualizar receptora con fecha de nacimiento del potrillo
+        if (categoria === "potrillo" && receptoraId && fechaNacimiento) {
+          const idxRec = horses.findIndex((h) => h.id === receptoraId);
+          if (idxRec !== -1) {
+            horses[idxRec] = {
+              ...horses[idxRec],
+              fechaNacimientoPotrillo: fechaNacimiento,
+            };
+          }
+        }
+
+        saveHorses(horses);
+        resetForm();
+        renderTable();
+      });
+
+    document.getElementById("reset-btn").addEventListener("click", resetForm);
+
+    document
+      .getElementById("categoria")
+      .addEventListener("change", function () {
+        applyCategoriaVisibility();
+        const cat = this.value;
+        if (cat === "potrillo") {
+          const nac = document.getElementById("fechaNacimiento").value;
+          if (nac) {
+            document.getElementById("fechaDestete").value =
+              calcDesteteFromNacimiento(nac);
+          }
+        }
+      });
+
+    document
+      .getElementById("receptoraId")
+      .addEventListener("change", function () {
+        const cat = document.getElementById("categoria").value;
+        if (cat === "potrillo") {
+          applyReceptoraToFoal(this.value);
+        }
+      });
+
+    document
+      .getElementById("fechaNacimiento")
+      .addEventListener("change", function () {
+        const cat = document.getElementById("categoria").value;
+        if (cat === "potrillo") {
+          document.getElementById("fechaDestete").value =
+            calcDesteteFromNacimiento(this.value);
+        }
+      });
+
+    document
+      .getElementById("trat-add-btn")
+      .addEventListener("click", function () {
+        const fecha = document.getElementById("tratFecha").value || "";
+        const pat = document
+          .getElementById("tratPatologia")
+          .value.trim();
+        const det = document.getElementById("tratDetalle").value.trim();
+        if (!pat && !det) return;
+        currentTratamientos.push({ fecha, patologia: pat, detalle: det });
+        document.getElementById("tratFecha").value = "";
+        document.getElementById("tratPatologia").value = "";
+        document.getElementById("tratDetalle").value = "";
+        renderTratamientosList();
+      });
+
+    document
+      .getElementById("foto")
+      .addEventListener("change", function () {
+        handleFileInput(this, "foto");
+      });
+
+    document
+      .getElementById("dibujo")
+      .addEventListener("change", function () {
+        handleFileInput(this, "dibujo");
+      });
+
+    document.getElementById("search").addEventListener("input", renderTable);
+    document
+      .getElementById("filterCategoria")
+      .addEventListener("change", renderTable);
+    document
+      .getElementById("filterPropietario")
+      .addEventListener("change", renderTable);
+
+    document
+      .getElementById("owner-form")
+      .addEventListener("submit", function (e) {
+        e.preventDefault();
+        const idField = document.getElementById("owner-id");
+        const nombre = document
+          .getElementById("ownerNombre")
+          .value.trim();
+        const contacto = document
+          .getElementById("ownerContacto")
+          .value.trim();
+        const cuit = document.getElementById("ownerCuit").value.trim();
+        const renspa = document.getElementById("ownerRenspa").value.trim();
+        const establecimiento = document
+          .getElementById("ownerEstablecimiento")
+          .value.trim();
+        const pension = document.getElementById("ownerPension").value;
+
+        if (!nombre) {
+          alert("El nombre / empresa del propietario es obligatorio.");
+          return;
+        }
+
+        let owners = loadOwners();
+        if (idField.value) {
+          const idx = owners.findIndex((o) => o.id === idField.value);
+          if (idx !== -1) {
+            owners[idx] = {
+              ...owners[idx],
+              nombre,
+              contacto,
+              cuit,
+              renspa,
+              establecimiento,
+              pension,
+            };
+          }
+        } else {
+          const newOwner = {
+            id: generateId("owner"),
+            nombre,
+            contacto,
+            cuit,
+            renspa,
+            establecimiento,
+            pension,
+          };
+          owners.push(newOwner);
+        }
+
+        saveOwners(owners);
+        resetOwnerForm();
+        renderOwners();
+        renderTable();
+      });
+
+    document
+      .getElementById("owner-reset-btn")
+      .addEventListener("click", resetOwnerForm);
+
+    // Modal pedigree
+    document
+      .getElementById("pedigree-backdrop")
+      .addEventListener("click", (e) => {
+        if (e.target.id === "pedigree-backdrop") {
+          document.getElementById("pedigree-backdrop").style.display = "none";
+        }
+      });
+
+    document
+      .getElementById("pedigree-close")
+      .addEventListener("click", () => {
+        document.getElementById("pedigree-backdrop").style.display = "none";
+      });
+
+    // Modal detalle
+    document
+      .getElementById("detail-backdrop")
+      .addEventListener("click", (e) => {
+        if (e.target.id === "detail-backdrop") {
+          document.getElementById("detail-backdrop").style.display = "none";
+        }
+      });
+
+    document
+      .getElementById("detail-close")
+      .addEventListener("click", () => {
+        document.getElementById("detail-backdrop").style.display = "none";
+      });
+
+    document
+      .getElementById("detail-edit")
+      .addEventListener("click", () => {
+        if (currentDetailId) {
+          loadIntoForm(currentDetailId);
+        }
+        document.getElementById("detail-backdrop").style.display = "none";
+      });
+
+    // Plan sanitario
+    document
+      .getElementById("plan-form")
+      .addEventListener("submit", function (e) {
+        e.preventDefault();
+        const idField = document.getElementById("plan-id");
+        const nombre = document.getElementById("planNombre").value.trim();
+        const categoria =
+          document.getElementById("planCategoria").value;
+        const base = document.getElementById("planBase").value;
+        const offset = Number(
+          document.getElementById("planOffset").value || 0
+        );
+        const descripcion = document
+          .getElementById("planDescripcion")
+          .value.trim();
+
+        if (!nombre) {
+          alert("Poné un nombre para el evento del plan sanitario.");
+          return;
+        }
+
+        let plan = loadPlan();
+        if (idField.value) {
+          const idx = plan.findIndex((p) => p.id === idField.value);
+          if (idx !== -1) {
+            plan[idx] = {
+              ...plan[idx],
+              nombre,
+              categoria,
+              base,
+              offset,
+              descripcion,
+            };
+          }
+        } else {
+          const newRule = {
+            id: generateId("plan"),
+            nombre,
+            categoria,
+            base,
+            offset,
+            descripcion,
+          };
+          plan.push(newRule);
+        }
+
+        savePlan(plan);
+        resetPlanForm();
+        renderPlanTable();
+      });
+
+    document
+      .getElementById("plan-reset-btn")
+      .addEventListener("click", resetPlanForm);
+
+    // Inicial
+    applyCategoriaVisibility();
+    renderOwners();
+    renderPlanTable();
+    renderTable();
+  </script>
+</body>
+</html>
